@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Box, Button, Divider, Paper, Stack, TextField, Typography,
   Alert, ToggleButton, ToggleButtonGroup,
@@ -10,35 +10,55 @@ import type { Role } from '../../types/auth'
 
 export function Register() {
   const { register, loginWithGoogle } = useAuth()
-
+  const navigate = useNavigate()
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState<Role>('student')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+const handleRegister = async (e: React.FormEvent) => {
+  e.preventDefault()
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    try {
-      await register(email, password, displayName, role)
-    } catch {
-      setError('Registration failed. Email may already be in use.')
-    } finally {
-      setLoading(false)
-    }
-  }
+  setError('')
+  setLoading(true)
 
-  const handleGoogle = async () => {
-    setError('')
-    try {
-      await loginWithGoogle(role)
-    } catch {
-      setError('Google sign-in failed.')
-    }
+  try {
+    const newUser = await register(
+      email,
+      password,
+      displayName,
+      role
+    )
+
+    navigate(
+      newUser.role === 'student'
+        ? ROUTES.STUDENT_DASHBOARD
+        : ROUTES.INSTRUCTOR_DASHBOARD,
+      { replace: true }
+    )
+  } catch {
+    setError('Registration failed. Email may already be in use.')
+  } finally {
+    setLoading(false)
   }
+}
+const handleGoogle = async () => {
+  setError('')
+
+  try {
+    const user = await loginWithGoogle(role)
+
+    navigate(
+      user.role === 'student'
+        ? ROUTES.STUDENT_DASHBOARD
+        : ROUTES.INSTRUCTOR_DASHBOARD,
+      { replace: true }
+    )
+  } catch {
+    setError('Google sign-in failed.')
+  }
+}
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100' }}>

@@ -1,6 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Box, Button, Divider, Paper, Stack, TextField, Typography, Alert } from '@mui/material'
+import {
+  Box,
+  Button,
+  Divider,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  Alert,
+} from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
 import { ROUTES } from '../../constants/routes'
 
@@ -13,19 +22,32 @@ export function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+useEffect(() => {
   if (user) {
     navigate(
-      user.role === 'student' ? ROUTES.STUDENT_DASHBOARD : ROUTES.INSTRUCTOR_DASHBOARD,
+      user.role === 'student'
+        ? ROUTES.STUDENT_DASHBOARD
+        : ROUTES.INSTRUCTOR_DASHBOARD,
       { replace: true }
     )
   }
+}, [user, navigate])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+
     setError('')
     setLoading(true)
+
     try {
-      await login(email, password)
+      const loggedInUser = await login(email, password)
+
+navigate(
+  loggedInUser.role === 'student'
+    ? ROUTES.STUDENT_DASHBOARD
+    : ROUTES.INSTRUCTOR_DASHBOARD,
+  { replace: true }
+)
     } catch {
       setError('Invalid email or password.')
     } finally {
@@ -35,8 +57,16 @@ export function Login() {
 
   const handleGoogle = async () => {
     setError('')
+
     try {
-      await loginWithGoogle('student')
+      const loggedInUser = await loginWithGoogle('student')
+
+      navigate(
+        loggedInUser.role === 'student'
+          ? ROUTES.STUDENT_DASHBOARD
+          : ROUTES.INSTRUCTOR_DASHBOARD,
+        { replace: true }
+      )
     } catch {
       setError('Google sign-in failed.')
     }

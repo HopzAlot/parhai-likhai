@@ -1,16 +1,14 @@
+import type { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
+import { CircularProgress, Box } from '@mui/material'
 import { useAuth } from '../hooks/useAuth'
 import { ROUTES } from '../constants/routes'
-import type { Role } from '../types/auth'
-import type { ReactNode } from 'react'
-import { CircularProgress, Box } from '@mui/material'
 
-type RoleRouteProps = {
-  role: Role
+type Props = {
   children: ReactNode
 }
 
-export function RoleRoute({ role, children }: RoleRouteProps) {
+export function PublicRoute({ children }: Props) {
   const { user, loading } = useAuth()
 
   if (loading) {
@@ -28,11 +26,7 @@ export function RoleRoute({ role, children }: RoleRouteProps) {
     )
   }
 
-  if (!user) {
-    return <Navigate to={ROUTES.LOGIN} replace />
-  }
-
-  if (user.role !== role) {
+  if (user) {
     return (
       <Navigate
         replace

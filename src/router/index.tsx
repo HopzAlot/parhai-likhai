@@ -13,12 +13,27 @@ import { InstructorDashboard } from '../pages/instructor/Dashboard'
 import { InstructorMyCourses } from '../pages/instructor/MyCourses'
 import { CreateCourse } from '../pages/instructor/CreateCourse'
 import { NotFound } from '../pages/NotFound'
+import { PublicRoute } from '../components/PublicRoute'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to={ROUTES.LOGIN} replace /> },
 
-  { path: ROUTES.LOGIN, element: <Login /> },
-  { path: ROUTES.REGISTER, element: <Register /> },
+{
+  path: ROUTES.LOGIN,
+  element: (
+    <PublicRoute>
+      <Login />
+    </PublicRoute>
+  ),
+},
+{
+  path: ROUTES.REGISTER,
+  element: (
+    <PublicRoute>
+      <Register />
+    </PublicRoute>
+  ),
+},
 
   {
     path: '/student',
