@@ -1,37 +1,134 @@
 import { useState } from 'react'
-import { Box, Button, MenuItem, Paper, Stack, TextField, Typography, Alert } from '@mui/material'
+import type { FormEvent } from 'react'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  MenuItem,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
+import { useSnackbar } from 'notistack'
+import { useAuth } from '../../hooks/useAuth'
+import { createCourse } from '../../services/courseService'
 
 const categories = ['Frontend', 'Backend', 'Design', 'Data', 'DevOps', 'Mobile']
 
 export function CreateCourse() {
-  const [submitted, setSubmitted] = useState(false)
+  const { user } = useAuth()
+  const { enqueueSnackbar } = useSnackbar()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [category, setCategory] = useState('')
+  const [duration, setDuration] = useState('')
+  const [prerequisites, setPrerequisites] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  const resetForm = () => {
+    setTitle('')
+    setDescription('')
+    setCategory('')
+    setDuration('')
+    setPrerequisites('')
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
+    if (!user) return
+
+    setSubmitting(true)
+
+    try {
+      await createCourse({
+        title,
+        description,
+        category,
+        duration,
+        prerequisites,
+        instructorId: user.uid,
+        instructorName: user.displayName,
+        instructorEmail: user.email,
+      })
+
+      enqueueSnackbar('Course created successfully', { variant: 'success' })
+      resetForm()
+    } catch (err) {
+      enqueueSnackbar(
+        err instanceof Error ? err.message : 'Failed to create course',
+        { variant: 'error' }
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h5" sx={{ fontWeight: 700 }}>Create a Course</Typography>
+      <Typography variant="h5" sx={{ fontWeight: 700 }}>
+        Create a Course
+      </Typography>
       <Paper variant="outlined" sx={{ p: 3, maxWidth: 600 }}>
-        {submitted ? (
-          <Alert severity="success" onClose={() => setSubmitted(false)}>
-            Course created! (Static demo — not saved to DB yet)
-          </Alert>
-        ) : (
-          <Box component="form" onSubmit={handleSubmit}>
-            <Stack spacing={2.5}>
-              <TextField label="Course Title" fullWidth required />
-              <TextField label="Description" fullWidth multiline minRows={3} required />
-              <TextField label="Category" select fullWidth required defaultValue="">
-                {categories.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-              </TextField>
-              <TextField label="Duration (e.g. 10h)" fullWidth required />
-              <Button type="submit" variant="contained">Create Course</Button>
-            </Stack>
-          </Box>
-        )}
+        <Box component="form" onSubmit={handleSubmit}>
+          <Stack spacing={2.5}>
+            <TextField
+              label="Course Title"
+              fullWidth
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <TextField
+              label="Description"
+              fullWidth
+              multiline
+              minRows={3}
+              required
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <TextField
+              label="Category"
+              select
+              fullWidth
+              required
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {categories.map((c) => (
+                <MenuItem key={c} value={c}>
+                  {c}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label="Duration (e.g. 10h)"
+              fullWidth
+              required
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+            />
+            <TextField
+              label="Prerequisites"
+              fullWidth
+              multiline
+              minRows={2}
+              placeholder="e.g. Basic JavaScript knowledge"
+              value={prerequisites}
+              onChange={(e) => setPrerequisites(e.target.value)}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={submitting}
+              startIcon={submitting ? <CircularProgress size={18} /> : undefined}
+            >
+              {submitting ? 'Creating...' : 'Create Course'}
+            </Button>
+          </Stack>
+        </Box>
       </Paper>
     </Stack>
   )

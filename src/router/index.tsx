@@ -9,6 +9,7 @@ import { Register } from '../pages/auth/Register'
 import { StudentDashboard } from '../pages/student/Dashboard'
 import { StudentMyCourses } from '../pages/student/MyCourses'
 import { BrowseCourses } from '../pages/student/BrowseCourses'
+import { RegisterCourse } from '../pages/student/RegisterCourse'
 import { InstructorDashboard } from '../pages/instructor/Dashboard'
 import { InstructorMyCourses } from '../pages/instructor/MyCourses'
 import { CreateCourse } from '../pages/instructor/CreateCourse'
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
       { path: 'dashboard', element: <StudentDashboard /> },
       { path: 'my-courses', element: <StudentMyCourses /> },
       { path: 'browse', element: <BrowseCourses /> },
+      { path: 'register/:courseId', element: <RegisterCourse /> },
     ],
   },
 
