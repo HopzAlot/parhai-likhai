@@ -1,13 +1,15 @@
 import {
   collection,
-  addDoc,
   updateDoc,
   deleteDoc,
   doc,
+  getDocs,
   onSnapshot,
   query,
   where,
   orderBy,
+  limit,
+  setDoc,
   serverTimestamp,
 } from 'firebase/firestore'
 import { db } from '../config/firebase'
@@ -64,11 +66,24 @@ export function subscribeToInstructorEnrollments(
 export async function createEnrollment(
   input: EnrollmentInput
 ): Promise<string> {
-  const ref = await addDoc(collection(db, ENROLLMENTS_COLLECTION), {
+  const enrollmentId = `${input.studentId}_${input.courseId}`
+  const duplicateQuery = query(
+    collection(db, ENROLLMENTS_COLLECTION),
+    where('studentId', '==', input.studentId),
+    where('courseId', '==', input.courseId),
+    limit(1)
+  )
+  const duplicateSnap = await getDocs(duplicateQuery)
+
+  if (!duplicateSnap.empty) {
+    throw new Error('You are already enrolled in this course.')
+  }
+
+  await setDoc(doc(db, ENROLLMENTS_COLLECTION, enrollmentId), {
     ...input,
     enrolledAt: serverTimestamp(),
   })
-  return ref.id
+  return enrollmentId
 }
 
 export async function updateEnrollmentStatus(

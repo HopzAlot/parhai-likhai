@@ -61,12 +61,73 @@ const handleGoogle = async () => {
 }
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100' }}>
-      <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 420 }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+        px: 2,
+        py: 5,
+        background:
+          'linear-gradient(135deg, rgba(15, 118, 110, 0.12), transparent 36%), #f7f8fb',
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          width: '100%',
+          maxWidth: 980,
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '0.95fr 1.05fr' },
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Box
+          sx={{
+            display: { xs: 'none', md: 'flex' },
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: 620,
+            p: 5,
+            color: 'white',
+            background:
+              'linear-gradient(145deg, rgba(11, 18, 32, 0.98), rgba(15, 118, 110, 0.88))',
+          }}
+        >
+          <Box>
+            <Typography variant="h4">CourseFlow</Typography>
+            <Typography sx={{ mt: 2, maxWidth: 360, color: 'rgba(255,255,255,0.74)' }}>
+              Create, enroll, and manage courses from one focused dashboard.
+            </Typography>
+          </Box>
+          <Stack spacing={2}>
+            {['Student learning paths', 'Instructor course studio', 'Firebase backed records'].map(
+              (item) => (
+                <Box
+                  key={item}
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>{item}</Typography>
+                </Box>
+              )
+            )}
+          </Stack>
+        </Box>
+
+        <Box sx={{ p: { xs: 3, sm: 5 }, display: 'grid', alignContent: 'center' }}>
         <Stack spacing={3}>
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: 700 }}>Create account</Typography>
-            <Typography color="text.secondary" variant="body2">Join LMS as a student or instructor</Typography>
+            <Typography variant="h4">Create account</Typography>
+            <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}>
+              Join as student or instructor.
+            </Typography>
           </Box>
 
           {error && <Alert severity="error">{error}</Alert>}
@@ -107,6 +168,7 @@ const handleGoogle = async () => {
             <Link to={ROUTES.LOGIN} style={{ color: 'inherit' }}>Sign in</Link>
           </Typography>
         </Stack>
+        </Box>
       </Paper>
     </Box>
   )

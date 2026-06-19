@@ -67,10 +67,20 @@ export function CreateCourse() {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h5" sx={{ fontWeight: 700 }}>
-        Create a Course
-      </Typography>
-      <Paper variant="outlined" sx={{ p: 3, maxWidth: 600 }}>
+      <Box>
+        <Typography variant="h5">Create a Course</Typography>
+        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+          Publish a structured course for student enrollment.
+        </Typography>
+      </Box>
+      <Paper
+        variant="outlined"
+        sx={{
+          p: { xs: 2.5, sm: 3 },
+          maxWidth: 720,
+          boxShadow: '0 18px 45px rgba(15, 23, 42, 0.06)',
+        }}
+      >
         <Box component="form" onSubmit={handleSubmit}>
           <Stack spacing={2.5}>
             <TextField
@@ -124,6 +134,7 @@ export function CreateCourse() {
               variant="contained"
               disabled={submitting}
               startIcon={submitting ? <CircularProgress size={18} /> : undefined}
+              sx={{ alignSelf: 'flex-start', px: 3 }}
             >
               {submitting ? 'Creating...' : 'Create Course'}
             </Button>

@@ -72,65 +72,71 @@ export function InstructorDashboard() {
   }
 
   return (
-    <Stack spacing={3}>
-      <Box>
-        <Typography variant="h5" sx={{ fontWeight: 700 }}>
-          Hello, {user?.displayName} 👋
+    <Stack spacing={3.5}>
+      <Box
+        sx={{
+          p: { xs: 3, md: 4 },
+          borderRadius: 2,
+          color: 'white',
+          background:
+            'linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(15, 118, 110, 0.92))',
+          boxShadow: '0 22px 55px rgba(15, 118, 110, 0.18)',
+        }}
+      >
+        <Typography variant="h4">
+          Hello, {user?.displayName}
         </Typography>
-        <Typography color="text.secondary">
-          Here's an overview of your courses.
+        <Typography sx={{ mt: 1, color: 'rgba(255,255,255,0.74)', maxWidth: 620 }}>
+          Monitor course inventory, student activity, and publishing momentum.
         </Typography>
       </Box>
 
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, sm: 4 }}>
-          <Card>
+        {[
+          { label: 'Courses Created', value: courses.length, color: 'secondary.main' },
+          { label: 'Total Students', value: enrollments.length, color: 'primary.main' },
+          { label: 'Active Courses', value: courses.length, color: '#111827' },
+        ].map((stat) => (
+          <Grid size={{ xs: 12, sm: 4 }} key={stat.label}>
+            <Card sx={{ height: '100%' }}>
             <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                {courses.length}
+              <Box
+                sx={{
+                  width: 38,
+                  height: 4,
+                  borderRadius: 999,
+                  bgcolor: stat.color,
+                  mb: 2,
+                }}
+              />
+              <Typography variant="h4">
+                {stat.value}
               </Typography>
-              <Typography color="text.secondary">
-                Courses Created
-              </Typography>
+              <Typography color="text.secondary">{stat.label}</Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid size={{ xs: 12, sm: 4 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                {enrollments.length}
-              </Typography>
-              <Typography color="text.secondary">Total Students</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid size={{ xs: 12, sm: 4 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                {courses.length}
-              </Typography>
-              <Typography color="text.secondary">Active Courses</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+        ))}
       </Grid>
 
       <Box>
-        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
           Your Courses
         </Typography>
         {courses.length === 0 ? (
+          <Card variant="outlined">
+            <CardContent sx={{ py: 5, textAlign: 'center' }}>
           <Typography color="text.secondary">
             You haven't created any courses yet.
           </Typography>
+            </CardContent>
+          </Card>
         ) : (
           <Grid container spacing={2}>
             {courses.map((course) => (
               <Grid size={{ xs: 12, sm: 6 }} key={course.id}>
                 <Card variant="outlined">
-                  <CardContent>
+                  <CardContent sx={{ display: 'grid', gap: 1 }}>
                     <Stack spacing={1}>
                       <Chip
                         label={course.category}
@@ -138,7 +144,7 @@ export function InstructorDashboard() {
                         color="secondary"
                         sx={{ alignSelf: 'flex-start' }}
                       />
-                      <Typography sx={{ fontWeight: 600 }}>
+                      <Typography sx={{ fontWeight: 800 }}>
                         {course.title}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">

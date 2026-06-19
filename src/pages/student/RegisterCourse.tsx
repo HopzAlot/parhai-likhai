@@ -140,11 +140,21 @@ export function RegisterCourse() {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h5" sx={{ fontWeight: 700 }}>
-        Register for {course.title}
-      </Typography>
+      <Box>
+        <Typography variant="h5">Register for {course.title}</Typography>
+        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+          Review course details and confirm your enrollment.
+        </Typography>
+      </Box>
 
-      <Paper variant="outlined" sx={{ p: 3, maxWidth: 600 }}>
+      <Paper
+        variant="outlined"
+        sx={{
+          p: { xs: 2.5, sm: 3 },
+          maxWidth: 760,
+          boxShadow: '0 18px 45px rgba(15, 23, 42, 0.06)',
+        }}
+      >
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
           {steps.map((label) => (
             <Step key={label}>
@@ -237,11 +247,19 @@ function PrerequisitesStep({ prerequisites }: { prerequisites: string }) {
 
 function ReadOnlyField({ label, value }: { label: string; value: string }) {
   return (
-    <Box>
+    <Box
+      sx={{
+        p: 2,
+        borderRadius: 2,
+        border: '1px solid',
+        borderColor: 'divider',
+        bgcolor: 'background.default',
+      }}
+    >
       <Typography variant="caption" color="text.secondary">
         {label}
       </Typography>
-      <Typography sx={{ fontWeight: 600 }}>{value}</Typography>
+      <Typography sx={{ fontWeight: 800 }}>{value}</Typography>
     </Box>
   )
 }

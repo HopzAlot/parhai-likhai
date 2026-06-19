@@ -80,20 +80,27 @@ export function InstructorMyCourses() {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h5" sx={{ fontWeight: 700 }}>
-        My Courses
-      </Typography>
+      <Box>
+        <Typography variant="h5">My Courses</Typography>
+        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+          Edit, review, and retire your course catalog.
+        </Typography>
+      </Box>
 
       {courses.length === 0 ? (
-        <Typography color="text.secondary">
-          You haven't created any courses yet.
-        </Typography>
+        <Card variant="outlined">
+          <CardContent sx={{ py: 5, textAlign: 'center' }}>
+            <Typography color="text.secondary">
+              You haven't created any courses yet.
+            </Typography>
+          </CardContent>
+        </Card>
       ) : (
         <Grid container spacing={2}>
           {courses.map((course) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={course.id}>
-              <Card variant="outlined">
-                <CardContent>
+              <Card variant="outlined" sx={{ height: '100%' }}>
+                <CardContent sx={{ height: '100%' }}>
                   <Stack spacing={1}>
                     <Chip
                       label={course.category}
@@ -101,7 +108,7 @@ export function InstructorMyCourses() {
                       color="secondary"
                       sx={{ alignSelf: 'flex-start' }}
                     />
-                    <Typography sx={{ fontWeight: 600 }}>
+                    <Typography sx={{ fontWeight: 800, fontSize: 18 }}>
                       {course.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -113,6 +120,7 @@ export function InstructorMyCourses() {
                     <Stack direction="row" spacing={1} sx={{ pt: 1 }}>
                       <Button
                         size="small"
+                        variant="outlined"
                         onClick={() => setEditingCourse(course)}
                       >
                         Edit

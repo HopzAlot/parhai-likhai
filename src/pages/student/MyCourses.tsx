@@ -50,20 +50,27 @@ export function StudentMyCourses() {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h5" sx={{ fontWeight: 700 }}>
-        My Courses
-      </Typography>
+      <Box>
+        <Typography variant="h5">My Courses</Typography>
+        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+          Your active and completed enrollments.
+        </Typography>
+      </Box>
 
       {enrollments.length === 0 ? (
-        <Typography color="text.secondary">
-          You haven't enrolled in any courses yet. Browse courses to get
-          started.
-        </Typography>
+        <Card variant="outlined">
+          <CardContent sx={{ py: 5, textAlign: 'center' }}>
+            <Typography color="text.secondary">
+              You haven't enrolled in any courses yet. Browse courses to get
+              started.
+            </Typography>
+          </CardContent>
+        </Card>
       ) : (
         <Grid container spacing={2}>
           {enrollments.map((enrollment) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={enrollment.id}>
-              <Card variant="outlined">
+              <Card variant="outlined" sx={{ height: '100%' }}>
                 <CardContent>
                   <Stack spacing={1}>
                     <Chip
@@ -76,7 +83,7 @@ export function StudentMyCourses() {
                       }
                       sx={{ alignSelf: 'flex-start' }}
                     />
-                    <Typography sx={{ fontWeight: 600 }}>
+                    <Typography sx={{ fontWeight: 800, fontSize: 18 }}>
                       {enrollment.courseTitle}
                     </Typography>
                   </Stack>
