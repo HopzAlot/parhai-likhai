@@ -28,9 +28,6 @@ export type Enrollment = {
   instructorId: string
   acceptedPrerequisites: boolean
   paymentReference?: string
-  paymentProofUrl?: string
-  paymentProofPath?: string
-  paymentProofName?: string
   status: EnrollmentStatus
   enrolledAt: Timestamp | null
 }

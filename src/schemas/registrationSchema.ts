@@ -23,11 +23,6 @@ export const registrationSchema = z.object({
   }),
 
   paymentReference: z.string().optional(),
-  paymentProof: z
-    .custom<File>((value) => value instanceof File, {
-      message: 'Payment proof image is required',
-    })
-    .nullable(),
 })
 
 export type RegistrationFormValues = z.infer<typeof registrationSchema>

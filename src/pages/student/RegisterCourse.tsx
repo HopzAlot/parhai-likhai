@@ -24,12 +24,7 @@ import {
 import { useSnackbar } from 'notistack'
 import { useAuth } from '../../hooks/useAuth'
 import { createEnrollment } from '../../services/enrollmentService'
-import {
-  deletePaymentProof,
-  uploadPaymentProof,
-} from '../../services/paymentProofService'
 import { PageHeader } from '../../components/ui/PageHeader'
-import { FormFileField } from '../../components/ui/FormFileField'
 import { FormTextField } from '../../components/ui/FormTextField'
 import {
   registrationSchema,
@@ -68,7 +63,6 @@ export function RegisterCourse() {
       instructorEmail: '',
       acceptedPrerequisites: false,
       paymentReference: '',
-      paymentProof: null,
     },
     mode: 'onChange',
   })
@@ -101,7 +95,6 @@ export function RegisterCourse() {
           instructorEmail: data.instructorEmail,
           acceptedPrerequisites: false,
           paymentReference: '',
-          paymentProof: null,
         })
       } catch {
         enqueueSnackbar('Failed to load course', { variant: 'error' })
@@ -125,28 +118,9 @@ export function RegisterCourse() {
   const onSubmit = async (values: RegistrationFormValues) => {
     if (!user || !course) return
 
-    if (!values.paymentProof) {
-      methods.setError('paymentProof', {
-        type: 'manual',
-        message: 'Payment proof image is required',
-      })
-      setActiveStep(2)
-      return
-    }
-
     setSubmitting(true)
 
-    let uploadedProof:
-      | { downloadUrl: string; storagePath: string; fileName: string }
-      | null = null
-
     try {
-      uploadedProof = await uploadPaymentProof(
-        values.paymentProof,
-        course.id,
-        user.uid
-      )
-
       await createEnrollment({
         courseId: values.courseId,
         courseTitle: values.courseTitle,
@@ -157,23 +131,12 @@ export function RegisterCourse() {
         instructorId: values.instructorId,
         acceptedPrerequisites: values.acceptedPrerequisites,
         paymentReference: values.paymentReference,
-        paymentProofUrl: uploadedProof.downloadUrl,
-        paymentProofPath: uploadedProof.storagePath,
-        paymentProofName: uploadedProof.fileName,
         status: 'active',
       })
 
       enqueueSnackbar('Successfully enrolled!', { variant: 'success' })
       navigate('/student/my-courses')
     } catch (err) {
-      if (uploadedProof) {
-        try {
-          await deletePaymentProof(uploadedProof.storagePath)
-        } catch {
-          // Best-effort cleanup only.
-        }
-      }
-
       enqueueSnackbar(
         err instanceof Error ? err.message : 'Enrollment failed',
         { variant: 'error' }
@@ -197,7 +160,7 @@ export function RegisterCourse() {
     <Stack spacing={3}>
       <PageHeader
         title={`Register for ${course.title}`}
-        subtitle="Fill your details, confirm the course, and attach payment proof."
+        subtitle="Fill your details, confirm the course, and share payment reference."
       />
 
       <Paper
@@ -344,14 +307,6 @@ function PaymentStep({ prerequisites }: { prerequisites: string }) {
         error={Boolean(errors.paymentReference)}
         helperText={errors.paymentReference?.message}
         {...register('paymentReference')}
-      />
-      <FormFileField
-        control={control}
-        name="paymentProof"
-        label="Payment Proof"
-        accept="image/*"
-        required
-        helperText="Upload a screenshot or photo of your payment."
       />
     </Stack>
   )
