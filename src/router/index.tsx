@@ -1,7 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ROUTES } from '../constants/routes'
-import { ProtectedRoute } from '../components/ProtectedRoute'
-import { RoleRoute } from '../components/RoleRoute'
+import { AuthGate } from '../components/AuthGate'
 import { AppLayout } from '../components/layouts/AppLayout'
 import { Login } from '../pages/auth/Login'
 import { Register } from '../pages/auth/Register'
@@ -12,8 +11,6 @@ import { RegisterCourse } from '../pages/student/RegisterCourse'
 import { InstructorDashboard } from '../pages/instructor/Dashboard'
 import { InstructorMyCourses } from '../pages/instructor/MyCourses'
 import { CreateCourse } from '../pages/instructor/CreateCourse'
-import { NotFound } from '../pages/NotFound'
-import { PublicRoute } from '../components/PublicRoute'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to={ROUTES.LOGIN} replace /> },
@@ -21,28 +18,26 @@ export const router = createBrowserRouter([
 {
   path: ROUTES.LOGIN,
   element: (
-    <PublicRoute>
+    <AuthGate mode="public">
       <Login />
-    </PublicRoute>
+    </AuthGate>
   ),
 },
 {
   path: ROUTES.REGISTER,
   element: (
-    <PublicRoute>
+    <AuthGate mode="public">
       <Register />
-    </PublicRoute>
+    </AuthGate>
   ),
 },
 
   {
     path: '/student',
     element: (
-      <ProtectedRoute>
-        <RoleRoute role="student">
+      <AuthGate mode="role" role="student">
           <AppLayout role="student" />
-        </RoleRoute>
-      </ProtectedRoute>
+      </AuthGate>
     ),
     children: [
       { index: true, element: <Navigate to={ROUTES.STUDENT_DASHBOARD} replace /> },
@@ -56,11 +51,9 @@ export const router = createBrowserRouter([
   {
     path: '/instructor',
     element: (
-      <ProtectedRoute>
-        <RoleRoute role="instructor">
+      <AuthGate mode="role" role="instructor">
           <AppLayout role="instructor" />
-        </RoleRoute>
-      </ProtectedRoute>
+      </AuthGate>
     ),
     children: [
       { index: true, element: <Navigate to={ROUTES.INSTRUCTOR_DASHBOARD} replace /> },
@@ -70,5 +63,5 @@ export const router = createBrowserRouter([
     ],
   },
 
-  { path: '*', element: <NotFound /> },
+  { path: '*', element: <Navigate to={ROUTES.LOGIN} replace /> },
 ])

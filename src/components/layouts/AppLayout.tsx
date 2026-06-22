@@ -115,7 +115,7 @@ export function AppLayout({ role }: AppLayoutProps) {
       >
         <Stack spacing={0.5} sx={{ mb: 4 }}>
           <Typography variant="h5" sx={{ color: 'white' }}>
-            CourseFlow
+            Parhai Likhai
           </Typography>
           <Typography variant="body2" sx={{ color: 'rgba(209, 213, 219, 0.8)' }}>
             {config.description}
