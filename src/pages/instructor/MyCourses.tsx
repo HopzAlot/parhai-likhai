@@ -11,9 +11,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  MenuItem,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material'
 import { useSnackbar } from 'notistack'
@@ -24,6 +22,10 @@ import {
   deleteCourse,
 } from '../../services/courseService'
 import type { Course, CourseInput } from '../../types/course'
+import { EmptyState } from '../../components/ui/EmptyState'
+import { FormSelectField } from '../../components/ui/FormSelectField'
+import { FormTextField } from '../../components/ui/FormTextField'
+import { PageHeader } from '../../components/ui/PageHeader'
 
 const categories = ['Frontend', 'Backend', 'Design', 'Data', 'DevOps', 'Mobile']
 
@@ -80,21 +82,13 @@ export function InstructorMyCourses() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography variant="h5">My Courses</Typography>
-        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-          Edit, review, and retire your course catalog.
-        </Typography>
-      </Box>
+      <PageHeader
+        title="My Courses"
+        subtitle="Edit, review, and retire your course catalog."
+      />
 
       {courses.length === 0 ? (
-        <Card variant="outlined">
-          <CardContent sx={{ py: 5, textAlign: 'center' }}>
-            <Typography color="text.secondary">
-              You haven't created any courses yet.
-            </Typography>
-          </CardContent>
-        </Card>
+        <EmptyState message="You haven't created any courses yet." />
       ) : (
         <Grid container spacing={2}>
           {courses.map((course) => (
@@ -193,15 +187,13 @@ function EditCourseDialog({
       <DialogTitle>Edit Course</DialogTitle>
       <DialogContent>
         <Stack spacing={2.5} sx={{ pt: 1 }}>
-          <TextField
+          <FormTextField
             label="Course Title"
-            fullWidth
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
-          <TextField
+          <FormTextField
             label="Description"
-            fullWidth
             multiline
             minRows={3}
             value={form.description}
@@ -209,28 +201,19 @@ function EditCourseDialog({
               setForm({ ...form, description: e.target.value })
             }
           />
-          <TextField
+          <FormSelectField
             label="Category"
-            select
-            fullWidth
+            options={categories}
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
-          >
-            {categories.map((c) => (
-              <MenuItem key={c} value={c}>
-                {c}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
+          />
+          <FormTextField
             label="Duration"
-            fullWidth
             value={form.duration}
             onChange={(e) => setForm({ ...form, duration: e.target.value })}
           />
-          <TextField
+          <FormTextField
             label="Prerequisites"
-            fullWidth
             multiline
             minRows={2}
             value={form.prerequisites}

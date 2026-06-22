@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  Box, Button, Divider, Paper, Stack, TextField, Typography,
+  Button, Divider, Stack, Typography,
   Alert, ToggleButton, ToggleButtonGroup,
 } from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
 import { ROUTES } from '../../constants/routes'
 import type { Role } from '../../types/auth'
+import { AuthShell } from '../../components/ui/AuthShell'
+import { FormTextField } from '../../components/ui/FormTextField'
 
 export function Register() {
   const { register, loginWithGoogle } = useAuth()
@@ -61,115 +63,77 @@ const handleGoogle = async () => {
 }
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'grid',
-        placeItems: 'center',
-        px: 2,
-        py: 5,
-        background:
-          'linear-gradient(135deg, rgba(15, 118, 110, 0.12), transparent 36%), #f7f8fb',
-      }}
+    <AuthShell
+      title="Create account"
+      panelTitle="Parhai Likhai"
+      subtitle="Join as student or instructor."
+      panelSubtitle="Create, enroll, and manage courses from one focused dashboard."
+      features={[
+        'Student learning paths',
+        'Instructor course studio',
+        'Firebase backed records',
+      ]}
+      accent="secondary"
     >
-      <Paper
-        elevation={0}
-        sx={{
-          width: '100%',
-          maxWidth: 980,
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '0.95fr 1.05fr' },
-          overflow: 'hidden',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Box
-          sx={{
-            display: { xs: 'none', md: 'flex' },
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: 620,
-            p: 5,
-            color: 'white',
-            background:
-              'linear-gradient(145deg, rgba(11, 18, 32, 0.98), rgba(15, 118, 110, 0.88))',
-          }}
+      {error && <Alert severity="error">{error}</Alert>}
+
+      <div>
+        <Typography variant="body2" gutterBottom>
+          I am a:
+        </Typography>
+        <ToggleButtonGroup
+          value={role}
+          exclusive
+          onChange={(_, val) => val && setRole(val)}
+          fullWidth
+          size="small"
         >
-          <Box>
-            <Typography variant="h4">CourseFlow</Typography>
-            <Typography sx={{ mt: 2, maxWidth: 360, color: 'rgba(255,255,255,0.74)' }}>
-              Create, enroll, and manage courses from one focused dashboard.
-            </Typography>
-          </Box>
-          <Stack spacing={2}>
-            {['Student learning paths', 'Instructor course studio', 'Firebase backed records'].map(
-              (item) => (
-                <Box
-                  key={item}
-                  sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    bgcolor: 'rgba(255,255,255,0.08)',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                  }}
-                >
-                  <Typography sx={{ fontWeight: 700 }}>{item}</Typography>
-                </Box>
-              )
-            )}
-          </Stack>
-        </Box>
+          <ToggleButton value="student">Student</ToggleButton>
+          <ToggleButton value="instructor">Instructor</ToggleButton>
+        </ToggleButtonGroup>
+      </div>
 
-        <Box sx={{ p: { xs: 3, sm: 5 }, display: 'grid', alignContent: 'center' }}>
-        <Stack spacing={3}>
-          <Box>
-            <Typography variant="h4">Create account</Typography>
-            <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}>
-              Join as student or instructor.
-            </Typography>
-          </Box>
-
-          {error && <Alert severity="error">{error}</Alert>}
-
-          <Box>
-            <Typography variant="body2" gutterBottom>I am a:</Typography>
-            <ToggleButtonGroup
-              value={role}
-              exclusive
-              onChange={(_, val) => val && setRole(val)}
-              fullWidth
-              size="small"
-            >
-              <ToggleButton value="student">Student</ToggleButton>
-              <ToggleButton value="instructor">Instructor</ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-
-          <Box component="form" onSubmit={handleRegister}>
-            <Stack spacing={2}>
-              <TextField label="Full name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} fullWidth required />
-              <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} fullWidth required />
-              <TextField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} fullWidth required helperText="At least 6 characters" />
-              <Button type="submit" variant="contained" fullWidth disabled={loading}>
-                {loading ? 'Creating account…' : 'Create account'}
-              </Button>
-            </Stack>
-          </Box>
-
-          <Divider>or</Divider>
-
-          <Button variant="outlined" fullWidth onClick={handleGoogle}>
-            Continue with Google as {role}
+      <form onSubmit={handleRegister}>
+        <Stack spacing={2}>
+          <FormTextField
+            label="Full name"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            required
+          />
+          <FormTextField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <FormTextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            helperText="At least 6 characters"
+          />
+          <Button type="submit" variant="contained" fullWidth disabled={loading}>
+            {loading ? 'Creating account…' : 'Create account'}
           </Button>
-
-          <Typography variant="body2" sx={{ textAlign: 'center' }}>
-            Already have an account?{' '}
-            <Link to={ROUTES.LOGIN} style={{ color: 'inherit' }}>Sign in</Link>
-          </Typography>
         </Stack>
-        </Box>
-      </Paper>
-    </Box>
+      </form>
+
+      <Divider>or</Divider>
+
+      <Button variant="outlined" fullWidth onClick={handleGoogle}>
+        Continue with Google as {role}
+      </Button>
+
+      <Typography variant="body2" sx={{ textAlign: 'center' }}>
+        Already have an account?{' '}
+        <Link to={ROUTES.LOGIN} style={{ color: 'inherit' }}>
+          Sign in
+        </Link>
+      </Typography>
+    </AuthShell>
   )
 }

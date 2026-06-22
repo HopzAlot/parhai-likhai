@@ -13,6 +13,8 @@ import { useSnackbar } from 'notistack'
 import { useAuth } from '../../hooks/useAuth'
 import { subscribeToStudentEnrollments } from '../../services/enrollmentService'
 import type { Enrollment } from '../../types/course'
+import { EmptyState } from '../../components/ui/EmptyState'
+import { PageHeader } from '../../components/ui/PageHeader'
 
 export function StudentMyCourses() {
   const { user } = useAuth()
@@ -50,22 +52,13 @@ export function StudentMyCourses() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography variant="h5">My Courses</Typography>
-        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-          Your active and completed enrollments.
-        </Typography>
-      </Box>
+      <PageHeader
+        title="My Courses"
+        subtitle="Your active and completed enrollments."
+      />
 
       {enrollments.length === 0 ? (
-        <Card variant="outlined">
-          <CardContent sx={{ py: 5, textAlign: 'center' }}>
-            <Typography color="text.secondary">
-              You haven't enrolled in any courses yet. Browse courses to get
-              started.
-            </Typography>
-          </CardContent>
-        </Card>
+        <EmptyState message="You haven't enrolled in any courses yet. Browse courses to get started." />
       ) : (
         <Grid container spacing={2}>
           {enrollments.map((enrollment) => (

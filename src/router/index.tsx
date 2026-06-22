@@ -2,8 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ROUTES } from '../constants/routes'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 import { RoleRoute } from '../components/RoleRoute'
-import { StudentLayout } from '../components/layouts/StudentLayout'
-import { InstructorLayout } from '../components/layouts/InstructorLayout'
+import { AppLayout } from '../components/layouts/AppLayout'
 import { Login } from '../pages/auth/Login'
 import { Register } from '../pages/auth/Register'
 import { StudentDashboard } from '../pages/student/Dashboard'
@@ -41,7 +40,7 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <RoleRoute role="student">
-          <StudentLayout />
+          <AppLayout role="student" />
         </RoleRoute>
       </ProtectedRoute>
     ),
@@ -59,7 +58,7 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <RoleRoute role="instructor">
-          <InstructorLayout />
+          <AppLayout role="instructor" />
         </RoleRoute>
       </ProtectedRoute>
     ),

@@ -15,17 +15,54 @@ import {
 } from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
 import { ROUTES } from '../../constants/routes'
+import type { Role } from '../../types/auth'
 
 const DRAWER_WIDTH = 260
 
-const navItems = [
-  { label: 'Dashboard', path: ROUTES.INSTRUCTOR_DASHBOARD, mark: 'D' },
-  { label: 'My Courses', path: ROUTES.INSTRUCTOR_MY_COURSES, mark: 'M' },
-  { label: 'Create Course', path: ROUTES.INSTRUCTOR_CREATE, mark: 'C' },
-]
+const layoutConfig = {
+  student: {
+    eyebrow: 'Student Workspace',
+    title: 'Learning Dashboard',
+    description: 'Learn, track, complete.',
+    activeColor: 'primary.main',
+    activeContrast: 'primary.contrastText',
+    avatarColor: 'secondary.main',
+    navItems: [
+      { label: 'Dashboard', path: ROUTES.STUDENT_DASHBOARD, mark: 'D' },
+      { label: 'My Courses', path: ROUTES.STUDENT_MY_COURSES, mark: 'M' },
+      { label: 'Browse Courses', path: ROUTES.STUDENT_BROWSE, mark: 'B' },
+    ],
+  },
+  instructor: {
+    eyebrow: 'Instructor Studio',
+    title: 'Course Management',
+    description: 'Build polished learning paths.',
+    activeColor: 'secondary.main',
+    activeContrast: 'secondary.contrastText',
+    avatarColor: 'primary.main',
+    navItems: [
+      { label: 'Dashboard', path: ROUTES.INSTRUCTOR_DASHBOARD, mark: 'D' },
+      { label: 'My Courses', path: ROUTES.INSTRUCTOR_MY_COURSES, mark: 'M' },
+      { label: 'Create Course', path: ROUTES.INSTRUCTOR_CREATE, mark: 'C' },
+    ],
+  },
+} satisfies Record<Role, {
+  eyebrow: string
+  title: string
+  description: string
+  activeColor: string
+  activeContrast: string
+  avatarColor: string
+  navItems: { label: string; path: string; mark: string }[]
+}>
 
-export function InstructorLayout() {
+type AppLayoutProps = {
+  role: Role
+}
+
+export function AppLayout({ role }: AppLayoutProps) {
   const { user, logout } = useAuth()
+  const config = layoutConfig[role]
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -40,12 +77,12 @@ export function InstructorLayout() {
         <Toolbar sx={{ justifyContent: 'space-between', minHeight: 72 }}>
           <Box>
             <Typography variant="overline" color="text.secondary">
-              Instructor Studio
+              {config.eyebrow}
             </Typography>
-            <Typography variant="h6">Course Management</Typography>
+            <Typography variant="h6">{config.title}</Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.main', fontSize: 14 }}>
+            <Avatar sx={{ width: 36, height: 36, bgcolor: config.avatarColor, fontSize: 14 }}>
               {user?.displayName?.[0]?.toUpperCase()}
             </Avatar>
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
@@ -78,14 +115,14 @@ export function InstructorLayout() {
       >
         <Stack spacing={0.5} sx={{ mb: 4 }}>
           <Typography variant="h5" sx={{ color: 'white' }}>
-            Parhai Likhai
+            CourseFlow
           </Typography>
           <Typography variant="body2" sx={{ color: 'rgba(209, 213, 219, 0.8)' }}>
-            Build polished learning paths.
+            {config.description}
           </Typography>
         </Stack>
         <List sx={{ display: 'grid', gap: 0.75 }}>
-          {navItems.map((item) => (
+          {config.navItems.map((item) => (
             <ListItem key={item.path} disablePadding>
               <ListItemButton
                 component={NavLink}
@@ -96,8 +133,8 @@ export function InstructorLayout() {
                   color: 'rgba(209, 213, 219, 0.86)',
                   '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.08)' },
                   '&.active': {
-                    bgcolor: 'secondary.main',
-                    color: 'secondary.contrastText',
+                    bgcolor: config.activeColor,
+                    color: config.activeContrast,
                   },
                 }}
               >
@@ -144,7 +181,7 @@ export function InstructorLayout() {
               pb: 2,
             }}
           >
-            {navItems.map((item) => (
+            {config.navItems.map((item) => (
               <Button
                 key={item.path}
                 component={NavLink}
@@ -154,9 +191,9 @@ export function InstructorLayout() {
                 sx={{
                   flexShrink: 0,
                   '&.active': {
-                    bgcolor: 'secondary.main',
-                    color: 'secondary.contrastText',
-                    borderColor: 'secondary.main',
+                    bgcolor: config.activeColor,
+                    color: config.activeContrast,
+                    borderColor: config.activeColor,
                   },
                 }}
               >

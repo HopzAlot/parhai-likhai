@@ -1,7 +1,12 @@
 import { z } from 'zod'
 
 export const registrationSchema = z.object({
-  // Step 1: Course Info (read-only confirmation, pulled from selected course)
+  // Step 1: Your details
+  studentName: z.string().min(1, 'Your name is required'),
+  studentEmail: z.string().email('Enter a valid email'),
+  studentPhone: z.string().min(1, 'Phone number is required'),
+
+  // Step 2: Course Info (read-only confirmation, pulled from selected course)
   courseId: z.string().min(1),
   courseTitle: z.string().min(1),
   category: z.string().min(1),
@@ -13,15 +18,22 @@ export const registrationSchema = z.object({
   instructorEmail: z.string().email(),
 
   // Step 3: Prerequisites
-  acceptedPrerequisites: z.literal(true, {
-    error: 'You must confirm you meet the prerequisites',
+  acceptedPrerequisites: z.boolean().refine((value) => value, {
+    message: 'You must confirm you meet the prerequisites',
   }),
+
+  paymentReference: z.string().optional(),
+  paymentProof: z
+    .custom<File>((value) => value instanceof File, {
+      message: 'Payment proof image is required',
+    })
+    .nullable(),
 })
 
 export type RegistrationFormValues = z.infer<typeof registrationSchema>
 
 export const STEP_FIELDS: Record<number, (keyof RegistrationFormValues)[]> = {
-  0: ['courseId', 'courseTitle', 'category', 'duration'],
-  1: ['instructorId', 'instructorName', 'instructorEmail'],
-  2: ['acceptedPrerequisites'],
+  0: ['studentName', 'studentEmail', 'studentPhone'],
+  1: ['courseId', 'courseTitle', 'category', 'duration'],
+  2: ['instructorId', 'instructorName', 'instructorEmail', 'acceptedPrerequisites', 'paymentReference'],
 }

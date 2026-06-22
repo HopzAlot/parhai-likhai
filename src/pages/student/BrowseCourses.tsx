@@ -14,6 +14,8 @@ import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
 import { subscribeToAllCourses } from '../../services/courseService'
 import type { Course } from '../../types/course'
+import { EmptyState } from '../../components/ui/EmptyState'
+import { PageHeader } from '../../components/ui/PageHeader'
 
 export function BrowseCourses() {
   const navigate = useNavigate()
@@ -48,21 +50,13 @@ export function BrowseCourses() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography variant="h5">Browse Courses</Typography>
-        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-          Find courses that match your next skill goal.
-        </Typography>
-      </Box>
+      <PageHeader
+        title="Browse Courses"
+        subtitle="Find courses that match your next skill goal."
+      />
 
       {courses.length === 0 ? (
-        <Card variant="outlined">
-          <CardContent sx={{ py: 5, textAlign: 'center' }}>
-            <Typography color="text.secondary">
-              No courses available yet. Check back soon.
-            </Typography>
-          </CardContent>
-        </Card>
+        <EmptyState message="No courses available yet. Check back soon." />
       ) : (
         <Grid container spacing={2}>
           {courses.map((course) => (

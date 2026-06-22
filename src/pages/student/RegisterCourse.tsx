@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useForm, FormProvider, useFormContext } from 'react-hook-form'
+import {
+  Controller,
+  FormProvider,
+  useForm,
+  useFormContext,
+} from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Box,
@@ -20,6 +25,13 @@ import { useSnackbar } from 'notistack'
 import { useAuth } from '../../hooks/useAuth'
 import { createEnrollment } from '../../services/enrollmentService'
 import {
+  deletePaymentProof,
+  uploadPaymentProof,
+} from '../../services/paymentProofService'
+import { PageHeader } from '../../components/ui/PageHeader'
+import { FormFileField } from '../../components/ui/FormFileField'
+import { FormTextField } from '../../components/ui/FormTextField'
+import {
   registrationSchema,
   STEP_FIELDS,
   type RegistrationFormValues,
@@ -28,7 +40,7 @@ import type { Course } from '../../types/course'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../../config/firebase'
 
-const steps = ['Course Info', 'Instructor Info', 'Prerequisites']
+const steps = ['Your Details', 'Course Review', 'Prerequisites & Payment']
 
 export function RegisterCourse() {
   const { courseId } = useParams<{ courseId: string }>()
@@ -44,6 +56,9 @@ export function RegisterCourse() {
   const methods = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
+      studentName: user?.displayName ?? '',
+      studentEmail: user?.email ?? '',
+      studentPhone: '',
       courseId: '',
       courseTitle: '',
       category: '',
@@ -51,7 +66,9 @@ export function RegisterCourse() {
       instructorId: '',
       instructorName: '',
       instructorEmail: '',
-      acceptedPrerequisites: false as unknown as true,
+      acceptedPrerequisites: false,
+      paymentReference: '',
+      paymentProof: null,
     },
     mode: 'onChange',
   })
@@ -72,6 +89,9 @@ export function RegisterCourse() {
         setCourse(data)
 
         methods.reset({
+          studentName: user?.displayName ?? '',
+          studentEmail: user?.email ?? '',
+          studentPhone: '',
           courseId: data.id,
           courseTitle: data.title,
           category: data.category,
@@ -79,7 +99,9 @@ export function RegisterCourse() {
           instructorId: data.instructorId,
           instructorName: data.instructorName,
           instructorEmail: data.instructorEmail,
-          acceptedPrerequisites: false as unknown as true,
+          acceptedPrerequisites: false,
+          paymentReference: '',
+          paymentProof: null,
         })
       } catch {
         enqueueSnackbar('Failed to load course', { variant: 'error' })
@@ -90,7 +112,7 @@ export function RegisterCourse() {
 
     fetchCourse()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courseId])
+  }, [courseId, user?.displayName, user?.email])
 
   const handleNext = async () => {
     const fields = STEP_FIELDS[activeStep]
@@ -101,24 +123,57 @@ export function RegisterCourse() {
   const handleBack = () => setActiveStep((s) => s - 1)
 
   const onSubmit = async (values: RegistrationFormValues) => {
-    if (!user) return
+    if (!user || !course) return
+
+    if (!values.paymentProof) {
+      methods.setError('paymentProof', {
+        type: 'manual',
+        message: 'Payment proof image is required',
+      })
+      setActiveStep(2)
+      return
+    }
 
     setSubmitting(true)
+
+    let uploadedProof:
+      | { downloadUrl: string; storagePath: string; fileName: string }
+      | null = null
+
     try {
+      uploadedProof = await uploadPaymentProof(
+        values.paymentProof,
+        course.id,
+        user.uid
+      )
+
       await createEnrollment({
         courseId: values.courseId,
         courseTitle: values.courseTitle,
         studentId: user.uid,
-        studentName: user.displayName,
-        studentEmail: user.email,
+        studentName: values.studentName,
+        studentEmail: values.studentEmail,
+        studentPhone: values.studentPhone,
         instructorId: values.instructorId,
         acceptedPrerequisites: values.acceptedPrerequisites,
+        paymentReference: values.paymentReference,
+        paymentProofUrl: uploadedProof.downloadUrl,
+        paymentProofPath: uploadedProof.storagePath,
+        paymentProofName: uploadedProof.fileName,
         status: 'active',
       })
 
       enqueueSnackbar('Successfully enrolled!', { variant: 'success' })
       navigate('/student/my-courses')
     } catch (err) {
+      if (uploadedProof) {
+        try {
+          await deletePaymentProof(uploadedProof.storagePath)
+        } catch {
+          // Best-effort cleanup only.
+        }
+      }
+
       enqueueSnackbar(
         err instanceof Error ? err.message : 'Enrollment failed',
         { variant: 'error' }
@@ -140,18 +195,16 @@ export function RegisterCourse() {
 
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography variant="h5">Register for {course.title}</Typography>
-        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-          Review course details and confirm your enrollment.
-        </Typography>
-      </Box>
+      <PageHeader
+        title={`Register for ${course.title}`}
+        subtitle="Fill your details, confirm the course, and attach payment proof."
+      />
 
       <Paper
         variant="outlined"
         sx={{
           p: { xs: 2.5, sm: 3 },
-          maxWidth: 760,
+          maxWidth: 780,
           boxShadow: '0 18px 45px rgba(15, 23, 42, 0.06)',
         }}
       >
@@ -165,9 +218,9 @@ export function RegisterCourse() {
 
         <FormProvider {...methods}>
           <Box component="form" onSubmit={methods.handleSubmit(onSubmit)}>
-            {activeStep === 0 && <CourseInfoStep />}
-            {activeStep === 1 && <InstructorInfoStep />}
-            {activeStep === 2 && <PrerequisitesStep prerequisites={course.prerequisites} />}
+            {activeStep === 0 && <YourDetailsStep />}
+            {activeStep === 1 && <CourseInfoStep course={course} />}
+            {activeStep === 2 && <PaymentStep prerequisites={course.prerequisites} />}
 
             <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
               <Button disabled={activeStep === 0} onClick={handleBack}>
@@ -196,44 +249,88 @@ export function RegisterCourse() {
   )
 }
 
-function CourseInfoStep() {
-  const { watch } = useFormContext<RegistrationFormValues>()
-  const values = watch()
-
-  return (
-    <Stack spacing={2}>
-      <ReadOnlyField label="Course Title" value={values.courseTitle} />
-      <ReadOnlyField label="Category" value={values.category} />
-      <ReadOnlyField label="Duration" value={values.duration} />
-    </Stack>
-  )
-}
-
-function InstructorInfoStep() {
-  const { watch } = useFormContext<RegistrationFormValues>()
-  const values = watch()
-
-  return (
-    <Stack spacing={2}>
-      <ReadOnlyField label="Instructor Name" value={values.instructorName} />
-      <ReadOnlyField label="Instructor Email" value={values.instructorEmail} />
-    </Stack>
-  )
-}
-
-function PrerequisitesStep({ prerequisites }: { prerequisites: string }) {
+function YourDetailsStep() {
   const {
     register,
     formState: { errors },
   } = useFormContext<RegistrationFormValues>()
 
   return (
+    <Stack spacing={2.5}>
+      <Typography variant="body2" color="text.secondary">
+        Enter details we’ll use for your enrollment record.
+      </Typography>
+      <FormTextField
+        label="Your Name"
+        required
+        error={Boolean(errors.studentName)}
+        helperText={errors.studentName?.message}
+        {...register('studentName')}
+      />
+      <FormTextField
+        label="Email Address"
+        required
+        error={Boolean(errors.studentEmail)}
+        helperText={errors.studentEmail?.message}
+        {...register('studentEmail')}
+      />
+      <FormTextField
+        label="Phone Number"
+        required
+        error={Boolean(errors.studentPhone)}
+        helperText={errors.studentPhone?.message}
+        {...register('studentPhone')}
+      />
+    </Stack>
+  )
+}
+
+function CourseInfoStep({ course }: { course: Course }) {
+  const { watch } = useFormContext<RegistrationFormValues>()
+  const values = watch()
+
+  return (
     <Stack spacing={2}>
+      <ReadOnlyField label="Course Title" value={course.title || values.courseTitle} />
+      <ReadOnlyField label="Category" value={course.category || values.category} />
+      <ReadOnlyField label="Duration" value={course.duration || values.duration} />
+      <ReadOnlyField
+        label="Instructor Name"
+        value={course.instructorName || values.instructorName}
+      />
+      <ReadOnlyField
+        label="Instructor Email"
+        value={course.instructorEmail || values.instructorEmail}
+      />
+    </Stack>
+  )
+}
+
+function PaymentStep({ prerequisites }: { prerequisites: string }) {
+  const {
+    control,
+    register,
+    formState: { errors },
+  } = useFormContext<RegistrationFormValues>()
+
+  return (
+    <Stack spacing={2.5}>
       <Typography variant="body2" color="text.secondary">
         {prerequisites || 'No prerequisites listed for this course.'}
       </Typography>
       <FormControlLabel
-        control={<Checkbox {...register('acceptedPrerequisites')} />}
+        control={
+          <Controller
+            control={control}
+            name="acceptedPrerequisites"
+            render={({ field }) => (
+              <Checkbox
+                checked={Boolean(field.value)}
+                onChange={(event) => field.onChange(event.target.checked)}
+              />
+            )}
+          />
+        }
         label="I confirm I meet the prerequisites for this course"
       />
       {errors.acceptedPrerequisites && (
@@ -241,6 +338,21 @@ function PrerequisitesStep({ prerequisites }: { prerequisites: string }) {
           {errors.acceptedPrerequisites.message}
         </FormHelperText>
       )}
+      <FormTextField
+        label="Payment Reference"
+        placeholder="Optional transaction or receipt number"
+        error={Boolean(errors.paymentReference)}
+        helperText={errors.paymentReference?.message}
+        {...register('paymentReference')}
+      />
+      <FormFileField
+        control={control}
+        name="paymentProof"
+        label="Payment Proof"
+        accept="image/*"
+        required
+        helperText="Upload a screenshot or photo of your payment."
+      />
     </Stack>
   )
 }

@@ -14,6 +14,8 @@ import { useAuth } from '../../hooks/useAuth'
 import { subscribeToInstructorCourses } from '../../services/courseService'
 import { subscribeToInstructorEnrollments } from '../../services/enrollmentService'
 import type { Course, Enrollment } from '../../types/course'
+import { EmptyState } from '../../components/ui/EmptyState'
+import { StatCard } from '../../components/ui/StatCard'
 
 export function InstructorDashboard() {
   const { user } = useAuth()
@@ -98,24 +100,8 @@ export function InstructorDashboard() {
           { label: 'Active Courses', value: courses.length, color: '#111827' },
         ].map((stat) => (
           <Grid size={{ xs: 12, sm: 4 }} key={stat.label}>
-            <Card sx={{ height: '100%' }}>
-            <CardContent>
-              <Box
-                sx={{
-                  width: 38,
-                  height: 4,
-                  borderRadius: 999,
-                  bgcolor: stat.color,
-                  mb: 2,
-                }}
-              />
-              <Typography variant="h4">
-                {stat.value}
-              </Typography>
-              <Typography color="text.secondary">{stat.label}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+            <StatCard {...stat} />
+          </Grid>
         ))}
       </Grid>
 
@@ -124,13 +110,7 @@ export function InstructorDashboard() {
           Your Courses
         </Typography>
         {courses.length === 0 ? (
-          <Card variant="outlined">
-            <CardContent sx={{ py: 5, textAlign: 'center' }}>
-          <Typography color="text.secondary">
-            You haven't created any courses yet.
-          </Typography>
-            </CardContent>
-          </Card>
+          <EmptyState message="You haven't created any courses yet." />
         ) : (
           <Grid container spacing={2}>
             {courses.map((course) => (
