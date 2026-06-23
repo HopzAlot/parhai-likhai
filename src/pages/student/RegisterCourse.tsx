@@ -236,6 +236,12 @@ function YourDetailsStep() {
         name="studentPhone"
         label="Phone Number"
         required
+        rules={{
+          pattern: {
+            value: /^\d+$/,
+            message: 'Phone number must contain digits only',
+          },
+        }}
       />
     </Stack>
   )
@@ -298,6 +304,12 @@ function PaymentStep({ prerequisites }: { prerequisites: string }) {
         name="paymentReference"
         label="Payment Reference"
         placeholder="Optional transaction or receipt number"
+        rules={{
+          pattern: {
+            value: /^\d+$/,
+            message: 'Payment reference must contain digits only',
+          },
+        }}
       />
     </Stack>
   )

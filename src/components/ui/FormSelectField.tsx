@@ -11,6 +11,7 @@ import { FormTextField } from './FormTextField'
 type FormSelectFieldProps<TFieldValues extends FieldValues = FieldValues> =
   TextFieldProps & {
     options: string[]
+    multiple?: boolean
     control: Control<TFieldValues>
     name: Path<TFieldValues>
     rules?: RegisterOptions<TFieldValues, Path<TFieldValues>>
@@ -18,10 +19,11 @@ type FormSelectFieldProps<TFieldValues extends FieldValues = FieldValues> =
 
 export function FormSelectField<TFieldValues extends FieldValues = FieldValues>({
   options,
+  multiple,
   ...props
 }: FormSelectFieldProps<TFieldValues>) {
   return (
-    <FormTextField select {...props}>
+    <FormTextField select multiple={multiple} {...props}>
       {options.map((option) => (
         <MenuItem key={option} value={option}>
           {option}

@@ -4,10 +4,7 @@ export const registrationSchema = z.object({
   // Step 1: Your details
   studentName: z.string().min(1, 'Your name is required'),
   studentEmail: z.string().email('Enter a valid email'),
-  studentPhone: z
-    .string()
-    .min(1, 'Phone number is required')
-    .regex(/^\d+$/, 'Phone number must contain digits only'),
+  studentPhone: z.string().min(1, 'Phone number is required'),
 
   // Step 2: Course Info (read-only confirmation, pulled from selected course)
   courseId: z.string().min(1),
@@ -25,12 +22,7 @@ export const registrationSchema = z.object({
     message: 'You must confirm you meet the prerequisites',
   }),
 
-  paymentReference: z
-    .union([
-      z.literal(''),
-      z.string().regex(/^\d+$/, 'Payment reference must contain digits only'),
-    ])
-    .optional(),
+  paymentReference: z.string().optional(),
 })
 
 export type RegistrationFormValues = z.infer<typeof registrationSchema>
