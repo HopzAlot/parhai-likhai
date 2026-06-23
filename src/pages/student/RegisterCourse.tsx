@@ -1,18 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-  Controller,
-  FormProvider,
-  useForm,
-  useFormContext,
-} from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Box,
   Button,
-  Checkbox,
   CircularProgress,
-  FormControlLabel,
   Paper,
   Step,
   StepLabel,
@@ -24,7 +17,8 @@ import { useSnackbar } from 'notistack'
 import { useAuth } from '../../hooks/useAuth'
 import { createEnrollment } from '../../services/enrollmentService'
 import { PageHeader } from '../../components/ui/PageHeader'
-import { FormTextField } from '../../components/ui/FormTextField'
+import { FormCheckboxField } from '../../components/forms/FormCheckboxField'
+import { FormTextField } from '../../components/forms/FormTextField'
 import {
   registrationSchema,
   STEP_FIELDS,
@@ -279,26 +273,13 @@ function PaymentStep({ prerequisites }: { prerequisites: string }) {
       <Typography variant="body2" color="text.secondary">
         {prerequisites || 'No prerequisites listed for this course.'}
       </Typography>
-      <FormControlLabel
-        control={
-          <Controller
-            control={control}
-            name="acceptedPrerequisites"
-            render={({ field }) => (
-              <Checkbox
-                checked={Boolean(field.value)}
-                onChange={(event) => field.onChange(event.target.checked)}
-              />
-            )}
-          />
-        }
+      <FormCheckboxField
+        control={control}
+        name="acceptedPrerequisites"
         label="I confirm I meet the prerequisites for this course"
+        required="You must confirm you meet the prerequisites"
+        helperText={errors.acceptedPrerequisites?.message}
       />
-      {errors.acceptedPrerequisites && (
-        <Typography variant="caption" color="error">
-          {errors.acceptedPrerequisites.message}
-        </Typography>
-      )}
       <FormTextField
         control={control}
         name="paymentReference"

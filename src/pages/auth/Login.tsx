@@ -11,7 +11,7 @@ import {
 import { useAuth } from '../../hooks/useAuth'
 import { ROUTES } from '../../constants/routes'
 import { AuthShell } from '../../components/ui/AuthShell'
-import { FormTextField } from '../../components/ui/FormTextField'
+import { FormTextField } from '../../components/forms/FormTextField'
 
 type LoginFormValues = {
   email: string

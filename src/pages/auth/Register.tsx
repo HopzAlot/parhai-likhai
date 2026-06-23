@@ -9,7 +9,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { ROUTES } from '../../constants/routes'
 import type { Role } from '../../types/auth'
 import { AuthShell } from '../../components/ui/AuthShell'
-import { FormTextField } from '../../components/ui/FormTextField'
+import { FormTextField } from '../../components/forms/FormTextField'
 
 type RegisterFormValues = {
   displayName: string

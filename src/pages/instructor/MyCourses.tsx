@@ -24,8 +24,8 @@ import {
 } from '../../services/courseService'
 import type { Course, CourseInput } from '../../types/course'
 import { EmptyState } from '../../components/ui/EmptyState'
-import { FormSelectField } from '../../components/ui/FormSelectField'
-import { FormTextField } from '../../components/ui/FormTextField'
+import { FormSelectField } from '../../components/forms/FormSelectField'
+import { FormTextField } from '../../components/forms/FormTextField'
 import { PageHeader } from '../../components/ui/PageHeader'
 
 const categories = ['Frontend', 'Backend', 'Design', 'Data', 'DevOps', 'Mobile']
