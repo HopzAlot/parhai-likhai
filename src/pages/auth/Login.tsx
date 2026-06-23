@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 import {
   Button,
   Divider,
@@ -12,14 +13,23 @@ import { ROUTES } from '../../constants/routes'
 import { AuthShell } from '../../components/ui/AuthShell'
 import { FormTextField } from '../../components/ui/FormTextField'
 
+type LoginFormValues = {
+  email: string
+  password: string
+}
+
 export function Login() {
   const { login, loginWithGoogle, user } = useAuth()
   const navigate = useNavigate()
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const { control, handleSubmit } = useForm<LoginFormValues>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
 useEffect(() => {
   if (user) {
@@ -32,14 +42,12 @@ useEffect(() => {
   }
 }, [user, navigate])
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-
+  const handleLogin = async (values: LoginFormValues) => {
     setError('')
     setLoading(true)
 
     try {
-      const loggedInUser = await login(email, password)
+      const loggedInUser = await login(values.email, values.password)
 
 navigate(
   loggedInUser.role === 'student'
@@ -81,20 +89,20 @@ navigate(
     >
       {error && <Alert severity="error">{error}</Alert>}
 
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleSubmit(handleLogin)}>
         <Stack spacing={2}>
           <FormTextField
+            control={control}
+            name="email"
             label="Email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <FormTextField
+            control={control}
+            name="password"
             label="Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             required
           />
           <Button type="submit" variant="contained" fullWidth disabled={loading}>

@@ -14,6 +14,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import { useForm } from 'react-hook-form'
 import { useSnackbar } from 'notistack'
 import { useAuth } from '../../hooks/useAuth'
 import {
@@ -54,7 +55,6 @@ export function InstructorMyCourses() {
     )
 
     return unsub
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid])
 
   const handleDelete = async (courseId: string) => {
@@ -154,19 +154,21 @@ function EditCourseDialog({
   onClose: () => void
 }) {
   const { enqueueSnackbar } = useSnackbar()
-  const [form, setForm] = useState<CourseInput>({
-    title: course.title,
-    description: course.description,
-    category: course.category,
-    duration: course.duration,
-    prerequisites: course.prerequisites,
-    instructorId: course.instructorId,
-    instructorName: course.instructorName,
-    instructorEmail: course.instructorEmail,
-  })
   const [saving, setSaving] = useState(false)
+  const { control, handleSubmit } = useForm<CourseInput>({
+    defaultValues: {
+      title: course.title,
+      description: course.description,
+      category: course.category,
+      duration: course.duration,
+      prerequisites: course.prerequisites,
+      instructorId: course.instructorId,
+      instructorName: course.instructorName,
+      instructorEmail: course.instructorEmail,
+    },
+  })
 
-  const handleSave = async () => {
+  const handleSave = async (form: CourseInput) => {
     setSaving(true)
     try {
       await updateCourse(course.id, form)
@@ -188,44 +190,44 @@ function EditCourseDialog({
       <DialogContent>
         <Stack spacing={2.5} sx={{ pt: 1 }}>
           <FormTextField
+            control={control}
+            name="title"
             label="Course Title"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
           <FormTextField
+            control={control}
+            name="description"
             label="Description"
             multiline
             minRows={3}
-            value={form.description}
-            onChange={(e) =>
-              setForm({ ...form, description: e.target.value })
-            }
           />
           <FormSelectField
+            control={control}
+            name="category"
             label="Category"
             options={categories}
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
           />
           <FormTextField
+            control={control}
+            name="duration"
             label="Duration"
-            value={form.duration}
-            onChange={(e) => setForm({ ...form, duration: e.target.value })}
           />
           <FormTextField
+            control={control}
+            name="prerequisites"
             label="Prerequisites"
             multiline
             minRows={2}
-            value={form.prerequisites}
-            onChange={(e) =>
-              setForm({ ...form, prerequisites: e.target.value })
-            }
           />
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" disabled={saving} onClick={handleSave}>
+        <Button
+          variant="contained"
+          disabled={saving}
+          onClick={handleSubmit(handleSave)}
+        >
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </DialogActions>

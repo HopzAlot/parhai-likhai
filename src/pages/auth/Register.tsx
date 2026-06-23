@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Controller, useForm } from 'react-hook-form'
 import {
   Button, Divider, Stack, Typography,
   Alert, ToggleButton, ToggleButtonGroup,
@@ -10,27 +11,38 @@ import type { Role } from '../../types/auth'
 import { AuthShell } from '../../components/ui/AuthShell'
 import { FormTextField } from '../../components/ui/FormTextField'
 
+type RegisterFormValues = {
+  displayName: string
+  email: string
+  password: string
+  role: Role
+}
+
 export function Register() {
   const { register, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
-  const [displayName, setDisplayName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [role, setRole] = useState<Role>('student')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-const handleRegister = async (e: React.FormEvent) => {
-  e.preventDefault()
+  const { control, handleSubmit, watch } = useForm<RegisterFormValues>({
+    defaultValues: {
+      displayName: '',
+      email: '',
+      password: '',
+      role: 'student',
+    },
+  })
+  const role = watch('role')
 
+const handleRegister = async (values: RegisterFormValues) => {
   setError('')
   setLoading(true)
 
   try {
     const newUser = await register(
-      email,
-      password,
-      displayName,
-      role
+      values.email,
+      values.password,
+      values.displayName,
+      values.role
     )
 
     navigate(
@@ -81,38 +93,44 @@ const handleGoogle = async () => {
         <Typography variant="body2" gutterBottom>
           I am a:
         </Typography>
-        <ToggleButtonGroup
-          value={role}
-          exclusive
-          onChange={(_, val) => val && setRole(val)}
-          fullWidth
-          size="small"
-        >
-          <ToggleButton value="student">Student</ToggleButton>
-          <ToggleButton value="instructor">Instructor</ToggleButton>
-        </ToggleButtonGroup>
+        <Controller
+          control={control}
+          name="role"
+          render={({ field }) => (
+            <ToggleButtonGroup
+              value={field.value}
+              exclusive
+              onChange={(_, val) => val && field.onChange(val)}
+              fullWidth
+              size="small"
+            >
+              <ToggleButton value="student">Student</ToggleButton>
+              <ToggleButton value="instructor">Instructor</ToggleButton>
+            </ToggleButtonGroup>
+          )}
+        />
       </div>
 
-      <form onSubmit={handleRegister}>
+      <form onSubmit={handleSubmit(handleRegister)}>
         <Stack spacing={2}>
           <FormTextField
+            control={control}
+            name="displayName"
             label="Full name"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
             required
           />
           <FormTextField
+            control={control}
+            name="email"
             label="Email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <FormTextField
+            control={control}
+            name="password"
             label="Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             required
             helperText="At least 6 characters"
           />

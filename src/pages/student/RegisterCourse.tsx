@@ -13,7 +13,6 @@ import {
   Checkbox,
   CircularProgress,
   FormControlLabel,
-  FormHelperText,
   Paper,
   Step,
   StepLabel,
@@ -130,7 +129,7 @@ export function RegisterCourse() {
         studentPhone: values.studentPhone,
         instructorId: values.instructorId,
         acceptedPrerequisites: values.acceptedPrerequisites,
-        paymentReference: values.paymentReference,
+        paymentReference: values.paymentReference || undefined,
         status: 'active',
       })
 
@@ -213,10 +212,7 @@ export function RegisterCourse() {
 }
 
 function YourDetailsStep() {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext<RegistrationFormValues>()
+  const { control } = useFormContext<RegistrationFormValues>()
 
   return (
     <Stack spacing={2.5}>
@@ -224,25 +220,22 @@ function YourDetailsStep() {
         Enter details we’ll use for your enrollment record.
       </Typography>
       <FormTextField
+        control={control}
+        name="studentName"
         label="Your Name"
         required
-        error={Boolean(errors.studentName)}
-        helperText={errors.studentName?.message}
-        {...register('studentName')}
       />
       <FormTextField
+        control={control}
+        name="studentEmail"
         label="Email Address"
         required
-        error={Boolean(errors.studentEmail)}
-        helperText={errors.studentEmail?.message}
-        {...register('studentEmail')}
       />
       <FormTextField
+        control={control}
+        name="studentPhone"
         label="Phone Number"
         required
-        error={Boolean(errors.studentPhone)}
-        helperText={errors.studentPhone?.message}
-        {...register('studentPhone')}
       />
     </Stack>
   )
@@ -272,7 +265,6 @@ function CourseInfoStep({ course }: { course: Course }) {
 function PaymentStep({ prerequisites }: { prerequisites: string }) {
   const {
     control,
-    register,
     formState: { errors },
   } = useFormContext<RegistrationFormValues>()
 
@@ -297,16 +289,15 @@ function PaymentStep({ prerequisites }: { prerequisites: string }) {
         label="I confirm I meet the prerequisites for this course"
       />
       {errors.acceptedPrerequisites && (
-        <FormHelperText error>
+        <Typography variant="caption" color="error">
           {errors.acceptedPrerequisites.message}
-        </FormHelperText>
+        </Typography>
       )}
       <FormTextField
+        control={control}
+        name="paymentReference"
         label="Payment Reference"
         placeholder="Optional transaction or receipt number"
-        error={Boolean(errors.paymentReference)}
-        helperText={errors.paymentReference?.message}
-        {...register('paymentReference')}
       />
     </Stack>
   )

@@ -22,10 +22,10 @@ export function CreateCourse() {
   const { enqueueSnackbar } = useSnackbar()
 
   const {
-    register,
+    control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<CourseFormValues>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
@@ -77,44 +77,39 @@ export function CreateCourse() {
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2.5}>
             <FormTextField
+              control={control}
+              name="title"
               label="Course Title"
               required
-              error={Boolean(errors.title)}
-              helperText={errors.title?.message}
-              {...register('title')}
             />
             <FormTextField
+              control={control}
+              name="description"
               label="Description"
               multiline
               minRows={3}
               required
-              error={Boolean(errors.description)}
-              helperText={errors.description?.message}
-              {...register('description')}
             />
             <FormSelectField
+              control={control}
+              name="category"
               label="Category"
               options={categories}
               required
-              error={Boolean(errors.category)}
-              helperText={errors.category?.message}
-              {...register('category')}
             />
             <FormTextField
+              control={control}
+              name="duration"
               label="Duration (e.g. 10h)"
               required
-              error={Boolean(errors.duration)}
-              helperText={errors.duration?.message}
-              {...register('duration')}
             />
             <FormTextField
+              control={control}
+              name="prerequisites"
               label="Prerequisites"
               multiline
               minRows={2}
               placeholder="e.g. Basic JavaScript knowledge"
-              error={Boolean(errors.prerequisites)}
-              helperText={errors.prerequisites?.message}
-              {...register('prerequisites')}
             />
             <Button
               type="submit"

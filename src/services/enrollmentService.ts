@@ -3,12 +3,12 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  getDoc,
+  getDocs,
   onSnapshot,
   query,
   where,
   orderBy,
-  setDoc,
+  runTransaction,
   serverTimestamp,
 } from 'firebase/firestore'
 import { db } from '../config/firebase'
@@ -66,16 +66,32 @@ export async function createEnrollment(
   input: EnrollmentInput
 ): Promise<string> {
   const enrollmentId = `${input.studentId}_${input.courseId}`
-  const existing = await getDoc(doc(db, ENROLLMENTS_COLLECTION, enrollmentId))
+  const enrollmentRef = doc(db, ENROLLMENTS_COLLECTION, enrollmentId)
+  const duplicateQuery = query(
+    collection(db, ENROLLMENTS_COLLECTION),
+    where('studentId', '==', input.studentId),
+    where('courseId', '==', input.courseId)
+  )
 
-  if (existing.exists()) {
+  const duplicateSnap = await getDocs(duplicateQuery)
+
+  if (!duplicateSnap.empty) {
     throw new Error('You are already enrolled in this course.')
   }
 
-  await setDoc(doc(db, ENROLLMENTS_COLLECTION, enrollmentId), {
-    ...input,
-    enrolledAt: serverTimestamp(),
+  await runTransaction(db, async (transaction) => {
+    const existing = await transaction.get(enrollmentRef)
+
+    if (existing.exists()) {
+      throw new Error('You are already enrolled in this course.')
+    }
+
+    transaction.set(enrollmentRef, {
+      ...input,
+      enrolledAt: serverTimestamp(),
+    })
   })
+
   return enrollmentId
 }
 

@@ -1,24 +1,32 @@
-import { forwardRef } from 'react'
+import type {
+  Control,
+  FieldValues,
+  Path,
+  RegisterOptions,
+} from 'react-hook-form'
 import { MenuItem } from '@mui/material'
 import type { TextFieldProps } from '@mui/material'
 import { FormTextField } from './FormTextField'
 
-type FormSelectFieldProps = TextFieldProps & {
-  options: string[]
-}
-
-export const FormSelectField = forwardRef<HTMLInputElement, FormSelectFieldProps>(
-  function FormSelectField({ options, ...props }, ref) {
-    return (
-      <FormTextField select {...props} ref={ref}>
-        {options.map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </FormTextField>
-    )
+type FormSelectFieldProps<TFieldValues extends FieldValues = FieldValues> =
+  TextFieldProps & {
+    options: string[]
+    control: Control<TFieldValues>
+    name: Path<TFieldValues>
+    rules?: RegisterOptions<TFieldValues, Path<TFieldValues>>
   }
-)
 
-FormSelectField.displayName = 'FormSelectField'
+export function FormSelectField<TFieldValues extends FieldValues = FieldValues>({
+  options,
+  ...props
+}: FormSelectFieldProps<TFieldValues>) {
+  return (
+    <FormTextField select {...props}>
+      {options.map((option) => (
+        <MenuItem key={option} value={option}>
+          {option}
+        </MenuItem>
+      ))}
+    </FormTextField>
+  )
+}
