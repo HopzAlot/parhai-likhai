@@ -111,7 +111,7 @@ const handleGoogle = async () => {
         />
       </div>
 
-      <form onSubmit={handleSubmit(handleRegister)}>
+      <form noValidate onSubmit={handleSubmit(handleRegister)}>
         <Stack spacing={2}>
           <FormTextField
             control={control}

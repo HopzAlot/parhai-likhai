@@ -89,7 +89,7 @@ navigate(
     >
       {error && <Alert severity="error">{error}</Alert>}
 
-      <form onSubmit={handleSubmit(handleLogin)}>
+      <form noValidate onSubmit={handleSubmit(handleLogin)}>
         <Stack spacing={2}>
           <FormTextField
             control={control}

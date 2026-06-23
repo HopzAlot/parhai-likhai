@@ -18,15 +18,35 @@ type FormTextFieldProps<TFieldValues extends FieldValues = FieldValues> =
 export function FormTextField<TFieldValues extends FieldValues = FieldValues>(
   props: FormTextFieldProps<TFieldValues>
 ) {
-  const { control, name, rules, helperText, ...textFieldProps } = props
+  const {
+    control,
+    name,
+    rules,
+    helperText,
+    required,
+    label,
+    ...textFieldProps
+  } = props
+
+  const validationRules = required
+    ? {
+        ...rules,
+        required:
+          typeof required === 'string'
+            ? required
+            : `${String(label ?? 'This field')} is required`,
+      }
+    : rules
+
   return (
     <Controller
       control={control}
       name={name}
-      rules={rules}
+      rules={validationRules}
       render={({ field, fieldState }) => (
         <TextField
           fullWidth
+          required={required}
           {...textFieldProps}
           {...field}
           value={field.value ?? ''}

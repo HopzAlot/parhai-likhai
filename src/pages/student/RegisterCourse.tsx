@@ -179,7 +179,7 @@ export function RegisterCourse() {
         </Stepper>
 
         <FormProvider {...methods}>
-          <Box component="form" onSubmit={methods.handleSubmit(onSubmit)}>
+          <Box component="form" noValidate onSubmit={methods.handleSubmit(onSubmit)}>
             {activeStep === 0 && <YourDetailsStep />}
             {activeStep === 1 && <CourseInfoStep course={course} />}
             {activeStep === 2 && <PaymentStep prerequisites={course.prerequisites} />}
@@ -220,7 +220,7 @@ function YourDetailsStep() {
         Enter details we’ll use for your enrollment record.
       </Typography>
       <FormTextField
-        control={control}
+        control={control} 
         name="studentName"
         label="Your Name"
         required

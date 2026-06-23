@@ -74,7 +74,7 @@ export function CreateCourse() {
           boxShadow: '0 18px 45px rgba(15, 23, 42, 0.06)',
         }}
       >
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2.5}>
             <FormTextField
               control={control}
