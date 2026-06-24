@@ -57,8 +57,7 @@ export function InstructorDashboard() {
       unsubCourses()
       unsubEnrollments()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.uid])
+  }, [user?.uid, enqueueSnackbar])
 
   const enrolledCountFor = (courseId: string) =>
     enrollments.filter((e) => e.courseId === courseId).length

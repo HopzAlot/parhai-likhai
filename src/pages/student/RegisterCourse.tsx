@@ -59,6 +59,7 @@ export function RegisterCourse() {
     },
     mode: 'onChange',
   })
+  const { reset } = methods
 
   useEffect(() => {
     if (!courseId) return
@@ -75,7 +76,7 @@ export function RegisterCourse() {
         const data = { id: snap.id, ...snap.data() } as Course
         setCourse(data)
 
-        methods.reset({
+        reset({
           studentName: user?.displayName ?? '',
           studentEmail: user?.email ?? '',
           studentPhone: '',
@@ -97,8 +98,7 @@ export function RegisterCourse() {
     }
 
     fetchCourse()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courseId, user?.displayName, user?.email])
+  }, [courseId, user?.displayName, user?.email, enqueueSnackbar, navigate, reset])
 
   const handleNext = async () => {
     const fields = STEP_FIELDS[activeStep]

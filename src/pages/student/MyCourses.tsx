@@ -39,8 +39,7 @@ export function StudentMyCourses() {
     )
 
     return unsub
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.uid])
+  }, [user?.uid, enqueueSnackbar])
 
   if (loading) {
     return (

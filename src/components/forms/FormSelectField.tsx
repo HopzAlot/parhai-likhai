@@ -20,10 +20,18 @@ type FormSelectFieldProps<TFieldValues extends FieldValues = FieldValues> =
 export function FormSelectField<TFieldValues extends FieldValues = FieldValues>({
   options,
   multiple,
+  slotProps,
   ...props
 }: FormSelectFieldProps<TFieldValues>) {
   return (
-    <FormTextField select multiple={multiple} {...props}>
+    <FormTextField
+      select
+      slotProps={{
+        ...slotProps,
+        ...(multiple ? { select: { multiple: true } } : {}),
+      }}
+      {...props}
+    >
       {options.map((option) => (
         <MenuItem key={option} value={option}>
           {option}

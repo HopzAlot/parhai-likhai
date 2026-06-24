@@ -13,7 +13,6 @@ type FormTextFieldProps<TFieldValues extends FieldValues = FieldValues> =
     control: Control<TFieldValues>
     name: Path<TFieldValues>
     rules?: RegisterOptions<TFieldValues, Path<TFieldValues>>
-    multiple?: boolean
   }
 
 export function FormTextField<TFieldValues extends FieldValues = FieldValues>(

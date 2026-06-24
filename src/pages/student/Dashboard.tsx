@@ -38,8 +38,7 @@ export function StudentDashboard() {
     )
 
     return unsub
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.uid])
+  }, [user?.uid, enqueueSnackbar])
 
   const activeCount = enrollments.filter((e) => e.status === 'active').length
   const completedCount = enrollments.filter(
