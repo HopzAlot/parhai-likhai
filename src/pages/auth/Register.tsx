@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import {
   Button, Divider, Stack, Typography,
-  Alert, ToggleButton, ToggleButtonGroup,
+  Alert,
 } from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
 import { ROUTES } from '../../constants/routes'
 import type { Role } from '../../types/auth'
 import { AuthShell } from '../../components/ui/AuthShell'
 import { FormTextField } from '../../components/forms/FormTextField'
+import { FormRadioGroup } from '../../components/forms/FormRadioGroup'
 
 type RegisterFormValues = {
   displayName: string
@@ -89,27 +90,12 @@ const handleGoogle = async () => {
     >
       {error && <Alert severity="error">{error}</Alert>}
 
-      <div>
-        <Typography variant="body2" gutterBottom>
-          I am a:
-        </Typography>
-        <Controller
-          control={control}
-          name="role"
-          render={({ field }) => (
-            <ToggleButtonGroup
-              value={field.value}
-              exclusive
-              onChange={(_, val) => val && field.onChange(val)}
-              fullWidth
-              size="small"
-            >
-              <ToggleButton value="student">Student</ToggleButton>
-              <ToggleButton value="instructor">Instructor</ToggleButton>
-            </ToggleButtonGroup>
-          )}
-        />
-      </div>
+      <FormRadioGroup
+        control={control}
+        name="role"
+        label="I am a"
+        options={['student', 'instructor']}
+      />
 
       <form noValidate onSubmit={handleSubmit(handleRegister)}>
         <Stack spacing={2}>

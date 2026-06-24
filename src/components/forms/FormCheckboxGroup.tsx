@@ -7,10 +7,11 @@ import type {
 } from 'react-hook-form'
 import {
   Checkbox,
+  FormControl,
   FormControlLabel,
+  FormGroup,
   FormHelperText,
-  Stack,
-  Typography,
+  FormLabel,
 } from '@mui/material'
 
 type FormCheckboxGroupProps<TFieldValues extends FieldValues = FieldValues> = {
@@ -62,12 +63,12 @@ export function FormCheckboxGroup<TFieldValues extends FieldValues = FieldValues
         }
 
         return (
-          <Stack spacing={0.5}>
-            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+          <FormControl error={Boolean(fieldState.error?.message)} component="fieldset">
+            <FormLabel component="legend">
               {label}
               {required ? ' *' : ''}
-            </Typography>
-            <Stack>
+            </FormLabel>
+            <FormGroup>
               {options.map((option) => (
                 <FormControlLabel
                   key={option}
@@ -82,13 +83,13 @@ export function FormCheckboxGroup<TFieldValues extends FieldValues = FieldValues
                   label={option}
                 />
               ))}
-            </Stack>
+            </FormGroup>
             {(fieldState.error?.message || helperText) && (
-              <FormHelperText error={Boolean(fieldState.error?.message)}>
+              <FormHelperText>
                 {fieldState.error?.message ?? helperText}
               </FormHelperText>
             )}
-          </Stack>
+          </FormControl>
         )
       }}
     />

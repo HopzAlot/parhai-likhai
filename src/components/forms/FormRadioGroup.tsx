@@ -6,29 +6,33 @@ import type {
   RegisterOptions,
 } from 'react-hook-form'
 import {
-  Checkbox,
   FormControl,
   FormControlLabel,
   FormHelperText,
+  FormLabel,
+  Radio,
+  RadioGroup,
 } from '@mui/material'
 
-type FormCheckboxFieldProps<TFieldValues extends FieldValues = FieldValues> = {
+type FormRadioGroupProps<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>
   name: Path<TFieldValues>
   label: string
+  options: string[]
   rules?: RegisterOptions<TFieldValues, Path<TFieldValues>>
   required?: boolean | string
   helperText?: string
 }
 
-export function FormCheckboxField<TFieldValues extends FieldValues = FieldValues>({
+export function FormRadioGroup<TFieldValues extends FieldValues = FieldValues>({
   control,
   name,
   label,
+  options,
   rules,
   required,
   helperText,
-}: FormCheckboxFieldProps<TFieldValues>) {
+}: FormRadioGroupProps<TFieldValues>) {
   const validationRules = required
     ? {
         ...rules,
@@ -46,15 +50,24 @@ export function FormCheckboxField<TFieldValues extends FieldValues = FieldValues
       rules={validationRules}
       render={({ field, fieldState }) => (
         <FormControl error={Boolean(fieldState.error?.message)} component="fieldset">
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={Boolean(field.value)}
-                onChange={(event) => field.onChange(event.target.checked)}
+          <FormLabel component="legend">
+            {label}
+            {required ? ' *' : ''}
+          </FormLabel>
+          <RadioGroup
+            {...field}
+            value={field.value ?? ''}
+            onChange={(event) => field.onChange(event.target.value)}
+          >
+            {options.map((option) => (
+              <FormControlLabel
+                key={option}
+                value={option}
+                control={<Radio />}
+                label={option}
               />
-            }
-            label={required ? `${label} *` : label}
-          />
+            ))}
+          </RadioGroup>
           {(fieldState.error?.message || helperText) && (
             <FormHelperText>
               {fieldState.error?.message ?? helperText}

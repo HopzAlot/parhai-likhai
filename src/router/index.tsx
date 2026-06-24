@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ROUTES } from '../constants/routes'
-import { AuthGate } from '../components/AuthGate'
+import { AuthGate } from '../components/authentication/AuthGate'
 import { AppLayout } from '../components/layouts/AppLayout'
 import { Login } from '../pages/auth/Login'
 import { Register } from '../pages/auth/Register'

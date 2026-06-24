@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
 import { Box, CircularProgress } from '@mui/material'
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
-import { ROUTES } from '../constants/routes'
-import type { Role } from '../types/auth'
+import { useAuth } from '../../hooks/useAuth'
+import { ROUTES } from '../../constants/routes'
+import type { Role } from '../../types/auth'
 
 type AuthGateProps =
   | {
